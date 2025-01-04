@@ -1,0 +1,137 @@
+#![allow(dead_code)]
+use crate::{
+    utils::{ClampRange, WriteColor},
+    vec::Vec3,
+};
+
+pub(crate) trait ColorSpace: Copy + Clone + std::fmt::Debug {}
+
+#[repr(transparent)]
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Color<T: ColorSpace> {
+    pub(crate) v: Vec3,
+    _color_space: std::marker::PhantomData<T>,
+}
+
+impl<T: ColorSpace> Color<T> {
+    pub(crate) fn new(r: f32, g: f32, b: f32) -> Self {
+        Color {
+            v: Vec3::new(r, g, b),
+            _color_space: std::marker::PhantomData,
+        }
+    }
+
+    pub(crate) fn r(&self) -> f32 {
+        self.v.x
+    }
+
+    pub(crate) fn mut_r(&mut self) -> &mut f32 {
+        &mut self.v.x
+    }
+
+    pub(crate) fn g(&self) -> f32 {
+        self.v.y
+    }
+
+    pub(crate) fn mut_g(&mut self) -> &mut f32 {
+        &mut self.v.y
+    }
+
+    pub(crate) fn b(&self) -> f32 {
+        self.v.z
+    }
+
+    pub(crate) fn mut_b(&mut self) -> &mut f32 {
+        &mut self.v.z
+    }
+}
+
+impl<T: ColorSpace> From<Vec3> for Color<T> {
+    fn from(vec: Vec3) -> Self {
+        Color {
+            v: vec,
+            _color_space: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<T: ColorSpace> From<Color<T>> for Vec3 {
+    fn from(color: Color<T>) -> Self {
+        color.v
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Linear;
+impl ColorSpace for Linear {}
+
+impl Color<Linear> {
+    pub(crate) fn to_srgb(self) -> Color<Srgb> {
+        Color::from(self)
+    }
+}
+
+impl From<Color<Srgb>> for Color<Linear> {
+    fn from(color: Color<Srgb>) -> Self {
+        Self::new(
+            Srgb::gamma_function(color.r()),
+            Srgb::gamma_function(color.g()),
+            Srgb::gamma_function(color.b()),
+        )
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Srgb;
+impl ColorSpace for Srgb {}
+
+impl Srgb {
+    pub(crate) fn gamma_function(value: f32) -> f32 {
+        if value <= 0.0 {
+            return value;
+        }
+        if value <= 0.04045 {
+            value / 12.92 // linear falloff in dark values
+        } else {
+            ((value + 0.055) / 1.055).powf(2.4) // gamma curve in other area
+        }
+    }
+
+    pub fn gamma_function_inverse(value: f32) -> f32 {
+        if value <= 0.0 {
+            return value;
+        }
+
+        if value <= 0.0031308 {
+            value * 12.92 // linear falloff in dark values
+        } else {
+            (1.055 * value.powf(1.0 / 2.4)) - 0.055 // gamma curve in other area
+        }
+    }
+}
+
+impl Color<Srgb> {
+    pub(crate) fn to_linear(self) -> Color<Linear> {
+        Color::from(self)
+    }
+}
+
+impl From<Color<Linear>> for Color<Srgb> {
+    fn from(color: Color<Linear>) -> Color<Srgb> {
+        Color::new(
+            Srgb::gamma_function_inverse(color.r()),
+            Srgb::gamma_function_inverse(color.g()),
+            Srgb::gamma_function_inverse(color.b()),
+        )
+    }
+}
+
+impl WriteColor for Color<Srgb> {
+    fn write_color(&self) {
+        let intensity = 0.0..0.999;
+        let r = (256.0 * self.r().clamp_range(&intensity)) as u8;
+        let g = (256.0 * self.g().clamp_range(&intensity)) as u8;
+        let b = (256.0 * self.b().clamp_range(&intensity)) as u8;
+        println!("{} {} {}", r, g, b)
+    }
+}
