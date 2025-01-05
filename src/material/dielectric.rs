@@ -1,4 +1,4 @@
-use crate::{color::Color, hittable::HitRecord, ray::Ray, vec::Vec3};
+use crate::{color::Color, hittable::HitRecord, ray::Ray, utils::Random, vec::Vec3};
 
 use super::{Linear, Material};
 
@@ -12,11 +12,11 @@ impl Dielectric {
         Dielectric { refraction_index }
     }
 
-    // fn reflectance(&self, cosine: f32, ref_idx: f32) -> f32 {
-    //     let r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
-    //     let r0 = r0 * r0;
-    //     r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0)
-    // }
+    fn reflectance(&self, cosine: f32, ref_idx: f32) -> f32 {
+        let r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+        let r0 = r0 * r0;
+        r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0)
+    }
 }
 
 impl Material for Dielectric {
@@ -32,9 +32,7 @@ impl Material for Dielectric {
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
         let cannot_refract = ri * sin_theta > 1.0;
-        let direction = if cannot_refract
-        /*|| self.reflectance(cos_theta, ri) > f32::random()*/
-        {
+        let direction = if cannot_refract || self.reflectance(cos_theta, ri) > f32::random() {
             unit_direction.reflect(hit.normal)
         } else {
             unit_direction.refract(hit.normal, ri)

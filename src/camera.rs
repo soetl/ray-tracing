@@ -8,8 +8,6 @@ use crate::{
 };
 
 pub struct Camera {
-    #[allow(dead_code)]
-    aspect_ratio: f32,
     image_width: u32,
     image_height: u32,
     pixel00_origin: Point3,
@@ -68,7 +66,6 @@ impl Camera {
         let defocus_disk_v = defocus_radius * v;
 
         Self {
-            aspect_ratio,
             image_width,
             image_height,
             pixel00_origin,
