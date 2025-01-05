@@ -6,8 +6,4 @@ cargo r --release > image.ppm
 ```
 
 You can view an image with any online .ppm reader. Or use [this one](https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html).
-
-`❗There is an bug with the dielectric material. I would be very grateful if you could help me with this.`
-
-With Schlick approximation (Wrong reflections, no transparency and no hollow sphere effect):  
-![](./docs/assets/with_schlick_approximation.png)
+![](./docs/assets/rt-in-one-week-final.png)
