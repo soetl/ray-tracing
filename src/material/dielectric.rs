@@ -1,4 +1,10 @@
-use crate::{color::Color, hittable::HitRecord, ray::Ray, utils::Random, vec::Vec3};
+use crate::{
+    color::Color,
+    hittable::HitRecord,
+    ray::Ray,
+    utils::Random,
+    vec::{Vec3, VecExt},
+};
 
 use super::{Linear, Material};
 
@@ -33,9 +39,11 @@ impl Material for Dielectric {
 
         let cannot_refract = ri * sin_theta > 1.0;
         let direction = if cannot_refract || self.reflectance(cos_theta, ri) > f32::random() {
-            unit_direction.reflect(hit.normal)
+            VecExt::reflect(&unit_direction, hit.normal)
+            // unit_direction.reflect(hit.normal)
         } else {
-            unit_direction.refract(hit.normal, ri)
+            VecExt::refract(&unit_direction, hit.normal, ri)
+            // unit_direction.refract(hit.normal, ri)
         };
 
         let scattered = Ray::new(hit.point, direction);

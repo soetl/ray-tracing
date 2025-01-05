@@ -22,6 +22,8 @@ pub(crate) trait VecExt {
     fn near_zero(&self) -> bool;
     fn random_unit() -> Vec3;
     fn random_in_unit_disk() -> Vec3;
+    fn reflect(&self, n: Vec3) -> Vec3;
+    fn refract(&self, n: Vec3, etai_over_etat: f32) -> Vec3;
 }
 
 impl VecExt for Vec3 {
@@ -51,5 +53,16 @@ impl VecExt for Vec3 {
                 return p;
             }
         }
+    }
+
+    fn reflect(&self, n: Vec3) -> Vec3 {
+        self - 2.0 * self.dot(n) * n
+    }
+
+    fn refract(&self, n: Vec3, etai_over_etat: f32) -> Vec3 {
+        let cos_theta = (-self).dot(n).min(1.0);
+        let r_out_perp = etai_over_etat * (self + cos_theta * n);
+        let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * n;
+        r_out_perp + r_out_parallel
     }
 }

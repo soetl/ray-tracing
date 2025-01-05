@@ -82,6 +82,7 @@ impl Camera {
 
     pub fn render(&self, world: &HittableList) {
         println!("P3\n{} {}\n255", self.image_width, self.image_height);
+        let total_pixels = self.image_width * self.image_height;
         for j in 0..self.image_height {
             for i in 0..self.image_width {
                 let mut color: Color<Linear> =
@@ -89,6 +90,13 @@ impl Camera {
                         let ray = self.get_ray(i, j);
                         Color::from(acc.v + Self::ray_color(&ray, world, self.max_depth).v)
                     });
+
+                if i % 2000 == 0 {
+                    eprint!(
+                        "\rScanlines remaining: {}.",
+                        total_pixels - (j * self.image_width + i)
+                    );
+                }
 
                 color.v *= 1.0 / self.samples_per_pixel as f32;
                 color.to_srgb().write_color();
@@ -105,7 +113,7 @@ impl Camera {
             let Some((scattered, attenuation)) = hit.material.scatter(ray, &hit) else {
                 return Color::from(Vec3::ZERO);
             };
-            return Color::from(Self::ray_color(&scattered, world, depth - 1).v * attenuation.v);
+            return Color::from(attenuation.v * Self::ray_color(&scattered, world, depth - 1).v);
         }
 
         let unit_direction = ray.direction().normalize();
@@ -116,8 +124,8 @@ impl Camera {
     fn get_ray(&self, i: u32, j: u32) -> Ray {
         let offset = Camera::sample_square();
         let pixel_sample = self.pixel00_origin
-            + self.pixel_delta_u * ((i as f32) + offset.x)
-            + self.pixel_delta_v * ((j as f32) + offset.y);
+            + (((i as f32) + offset.x) * self.pixel_delta_u)
+            + (((j as f32) + offset.y) * self.pixel_delta_v);
 
         let ray_origin = if self.defocus_angle <= 0.0 {
             self.look_from
