@@ -32,15 +32,6 @@ impl HitRecord {
             material,
         }
     }
-
-    pub fn set_face_normal(&mut self, ray: &Ray, outward_normal: Vec3) {
-        self.front_face = ray.direction.dot(outward_normal) < 0.0;
-        self.normal = if self.front_face {
-            outward_normal
-        } else {
-            -outward_normal
-        };
-    }
 }
 
 pub trait Hittable {
@@ -60,11 +51,6 @@ impl HittableList {
 
     pub fn add(&mut self, object: Box<dyn Hittable>) {
         self.objects.push(object);
-    }
-
-    #[allow(dead_code)]
-    pub fn clear(&mut self) {
-        self.objects.clear();
     }
 }
 
