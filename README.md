@@ -9,8 +9,5 @@ You can view an image with any online .ppm reader. Or use [this one](https://www
 
 `❗There is an bug with the dielectric material. I would be very grateful if you could help me with this.`
 
-With Schlick approximation (Irregular reflections and no hollow sphere effect):  
-![](./docs/assets/with_schlick_approximation.jpg)
-
-Without Schlick approximation (Complete absence of reflections and transparency, dark sphere):  
-![](./docs/assets/without_schlick_approximation.jpg)
+With Schlick approximation (Wrong reflections, no transparency and no hollow sphere effect):  
+![](./docs/assets/with_schlick_approximation.png)
