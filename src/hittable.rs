@@ -28,7 +28,7 @@ impl HitRecord {
             point,
             normal,
             t,
-            front_face: false,
+            front_face,
             material,
         }
     }
