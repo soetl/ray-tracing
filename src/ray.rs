@@ -16,11 +16,11 @@ impl Ray {
     }
 
     #[allow(dead_code)]
-    pub fn origin(&self) -> &Point3 {
-        &self.origin
+    pub fn origin(&self) -> Point3 {
+        self.origin
     }
 
-    pub fn direction(&self) -> &Vec3 {
-        &self.direction
+    pub fn direction(&self) -> Vec3 {
+        self.direction
     }
 }
