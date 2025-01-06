@@ -17,16 +17,16 @@ where
     }
 }
 
-pub trait ClampRange: Sized {
-    fn clamp_range(&self, range: &Range<Self>) -> Self;
+pub trait Clamp<T> {
+    fn clamp(&self, value: T) -> T;
 }
 
-impl ClampRange for f32 {
-    fn clamp_range(&self, range: &Range<f32>) -> f32 {
-        match self {
-            x if *x < range.start => range.start,
-            x if *x > range.end => range.end,
-            x => *x,
+impl Clamp<f32> for Range<f32> {
+    fn clamp(&self, value: f32) -> f32 {
+        match value {
+            x if x < self.start => self.start,
+            x if x > self.end => self.end,
+            x => x,
         }
     }
 }
@@ -48,8 +48,4 @@ impl Random<f32> for f32 {
     fn random_range(range: &Range<f32>) -> f32 {
         range.start + (range.end - range.start) * f32::random()
     }
-}
-
-pub trait WriteColor {
-    fn write_color(&self);
 }
