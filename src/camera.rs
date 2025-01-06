@@ -4,7 +4,7 @@ use rayon::prelude::*;
 
 use crate::{
     color::{Color, Linear},
-    hittable::{Hittable, HittableList},
+    hittable::Hittable,
     point::Point3,
     ray::Ray,
     utils::{Random, INFINITY},
@@ -84,7 +84,7 @@ impl Camera {
         }
     }
 
-    pub fn render(&self, world: &HittableList) -> RgbImage {
+    pub fn render(&self, world: &impl Hittable) -> RgbImage {
         let mut output = RgbImage::new(self.image_width, self.image_height);
         output
             .par_enumerate_pixels_mut()
@@ -103,7 +103,7 @@ impl Camera {
         output
     }
 
-    fn ray_color(ray: &Ray, world: &HittableList, depth: u32) -> Color<Linear> {
+    fn ray_color(ray: &Ray, world: &impl Hittable, depth: u32) -> Color<Linear> {
         if depth == 0 {
             return Color::from(Vec3::ZERO);
         }

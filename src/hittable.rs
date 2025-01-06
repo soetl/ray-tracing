@@ -38,28 +38,14 @@ pub trait Hittable: Send + Sync {
     fn hit(&self, ray: &Ray, ray_t: Range<f32>) -> Option<HitRecord>;
 }
 
-pub struct HittableList {
-    objects: Vec<Box<dyn Hittable>>,
-}
-
-impl HittableList {
-    pub fn new() -> HittableList {
-        HittableList {
-            objects: Vec::new(),
-        }
-    }
-
-    pub fn add(&mut self, object: Box<dyn Hittable>) {
-        self.objects.push(object);
-    }
-}
+pub type HittableList = Vec<Box<dyn Hittable>>;
 
 impl Hittable for HittableList {
     fn hit(&self, ray: &Ray, ray_t: Range<f32>) -> Option<HitRecord> {
         let mut closest_so_far = ray_t.end;
         let mut hit_record = None;
 
-        for object in &self.objects {
+        for object in self {
             if let Some(record) = object.hit(ray, ray_t.start..closest_so_far) {
                 closest_so_far = record.t;
                 hit_record = Some(record);
