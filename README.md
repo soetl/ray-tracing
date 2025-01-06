@@ -2,7 +2,7 @@
 
 Run code:
 ```
-cargo r --release
+cargo r --release --example rt-in-one-week_14_1
 ```
 
 ---
@@ -10,11 +10,7 @@ cargo r --release
 *Ray Tracing in One Weekend. Chapter 11.5*
 
 ---
-![](./docs/assets/rt-in-one-week-12.2.1.png)
-*Ray Tracing in One Weekend. Chapter 12.2.1*
-
----
-![](./docs/assets/rt-in-one-week-12.2.2.png)
+![](./docs/assets/rt-in-one-week-12.2.png)
 *Ray Tracing in One Weekend. Chapter 12.2.2*
 
 ---
@@ -22,5 +18,5 @@ cargo r --release
 *Ray Tracing in One Weekend. Chapter 13.2*
 
 ---
-![](./docs/assets/rt-in-one-week-final.png)
-*Ray Tracing in One Weekend. Final result*
+![](./docs/assets/rt-in-one-week-14.1.png)
+*Ray Tracing in One Weekend. Chapter 14.1*
