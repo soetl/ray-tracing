@@ -1,8 +1,7 @@
 #![allow(dead_code)]
-use crate::{
-    utils::{ClampRange, WriteColor},
-    vec::Vec3,
-};
+use image::Rgb;
+
+use crate::{utils::Clamp, vec::Vec3};
 
 pub(crate) trait ColorSpace: Copy + Clone + std::fmt::Debug {}
 
@@ -126,12 +125,13 @@ impl From<Color<Linear>> for Color<Srgb> {
     }
 }
 
-impl WriteColor for Color<Srgb> {
-    fn write_color(&self) {
-        let intensity = 0.0..0.999;
-        let r = (256.0 * self.r().clamp_range(&intensity)) as u8;
-        let g = (256.0 * self.g().clamp_range(&intensity)) as u8;
-        let b = (256.0 * self.b().clamp_range(&intensity)) as u8;
-        println!("{} {} {}", r, g, b)
+impl From<Color<Srgb>> for Rgb<u8> {
+    fn from(color: Color<Srgb>) -> Self {
+        let range = 0.001..0.999;
+        Rgb([
+            (256.0 * range.clamp(color.r())) as u8,
+            (256.0 * range.clamp(color.g())) as u8,
+            (256.0 * range.clamp(color.b())) as u8,
+        ])
     }
 }

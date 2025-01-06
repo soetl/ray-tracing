@@ -1,9 +1,13 @@
+use image::RgbImage;
+use indicatif::ParallelProgressIterator;
+use rayon::prelude::*;
+
 use crate::{
     color::{Color, Linear},
     hittable::{Hittable, HittableList},
     point::Point3,
     ray::Ray,
-    utils::{Random, WriteColor, INFINITY},
+    utils::{Random, INFINITY},
     vec::{Vec3, VecExt},
 };
 
@@ -80,28 +84,23 @@ impl Camera {
         }
     }
 
-    pub fn render(&self, world: &HittableList) {
-        println!("P3\n{} {}\n255", self.image_width, self.image_height);
-        let total_pixels = self.image_width * self.image_height;
-        for j in 0..self.image_height {
-            for i in 0..self.image_width {
+    pub fn render(&self, world: &HittableList) -> RgbImage {
+        let mut output = RgbImage::new(self.image_width, self.image_height);
+        output
+            .par_enumerate_pixels_mut()
+            .progress()
+            .for_each(|(x, y, pixel)| {
                 let mut color: Color<Linear> =
                     (0..self.samples_per_pixel).fold(Color::from(Vec3::ZERO), |acc, _| {
-                        let ray = self.get_ray(i, j);
+                        let ray = self.get_ray(x, y);
                         Color::from(acc.v + Self::ray_color(&ray, world, self.max_depth).v)
                     });
 
-                if i % 2000 == 0 {
-                    eprint!(
-                        "\rScanlines remaining: {}.",
-                        total_pixels - (j * self.image_width + i)
-                    );
-                }
-
                 color.v *= 1.0 / self.samples_per_pixel as f32;
-                color.to_srgb().write_color();
-            }
-        }
+                *pixel = color.to_srgb().into();
+            });
+
+        output
     }
 
     fn ray_color(ray: &Ray, world: &HittableList, depth: u32) -> Color<Linear> {

@@ -102,5 +102,9 @@ fn main() {
         focus_distance,
     );
 
-    camera.render(&world);
+    let image = camera.render(&world);
+    match image.save("output.png") {
+        Ok(_) => println!("Image saved successfully."),
+        Err(e) => eprintln!("Failed to save image: {}", e),
+    }
 }
