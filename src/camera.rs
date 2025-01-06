@@ -27,16 +27,18 @@ pub struct Camera {
 
 impl Camera {
     pub fn new(
-        aspect_ratio: f32,
-        image_width: u32,
-        samples_per_pixel: u32,
-        max_depth: u32,
-        vfov: f32,
-        look_from: Point3,
-        look_at: Point3,
-        vup: Vec3,
-        defocus_angle: f32,
-        focus_distance: f32,
+        &CameraConfig {
+            aspect_ratio,
+            image_width,
+            samples_per_pixel,
+            max_depth,
+            vfov,
+            look_from,
+            look_at,
+            vup,
+            defocus_angle,
+            focus_distance,
+        }: &CameraConfig,
     ) -> Self {
         let image_height = (image_width as f32 / aspect_ratio) as u32;
         let image_height = if image_height < 1 { 1 } else { image_height };
@@ -143,5 +145,35 @@ impl Camera {
     fn defocus_disk_sample(&self) -> Point3 {
         let p = Vec3::random_in_unit_disk();
         self.look_from + (p.x * self.defocus_disk_u) + (p.y * self.defocus_disk_v)
+    }
+}
+
+pub struct CameraConfig {
+    pub aspect_ratio: f32,
+    pub image_width: u32,
+    pub samples_per_pixel: u32,
+    pub max_depth: u32,
+    pub vfov: f32,
+    pub look_from: Point3,
+    pub look_at: Point3,
+    pub vup: Vec3,
+    pub defocus_angle: f32,
+    pub focus_distance: f32,
+}
+
+impl Default for CameraConfig {
+    fn default() -> Self {
+        Self {
+            aspect_ratio: 16.0 / 9.0,
+            image_width: 1200,
+            samples_per_pixel: 500,
+            max_depth: 50,
+            vfov: 90.0,
+            look_from: Point3::new(0.0, 0.0, 0.0),
+            look_at: Point3::new(0.0, 0.0, -1.0),
+            vup: Vec3::Y,
+            defocus_angle: 0.0,
+            focus_distance: 10.0,
+        }
     }
 }

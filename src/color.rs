@@ -3,44 +3,44 @@ use image::Rgb;
 
 use crate::{utils::Clamp, vec::Vec3};
 
-pub(crate) trait ColorSpace: Copy + Clone + std::fmt::Debug {}
+pub trait ColorSpace: Copy + Clone + std::fmt::Debug {}
 
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Color<T: ColorSpace> {
-    pub(crate) v: Vec3,
+pub struct Color<T: ColorSpace> {
+    pub v: Vec3,
     _color_space: std::marker::PhantomData<T>,
 }
 
 impl<T: ColorSpace> Color<T> {
-    pub(crate) fn new(r: f32, g: f32, b: f32) -> Self {
+    pub fn new(r: f32, g: f32, b: f32) -> Self {
         Color {
             v: Vec3::new(r, g, b),
             _color_space: std::marker::PhantomData,
         }
     }
 
-    pub(crate) fn r(&self) -> f32 {
+    pub fn r(&self) -> f32 {
         self.v.x
     }
 
-    pub(crate) fn mut_r(&mut self) -> &mut f32 {
+    pub fn mut_r(&mut self) -> &mut f32 {
         &mut self.v.x
     }
 
-    pub(crate) fn g(&self) -> f32 {
+    pub fn g(&self) -> f32 {
         self.v.y
     }
 
-    pub(crate) fn mut_g(&mut self) -> &mut f32 {
+    pub fn mut_g(&mut self) -> &mut f32 {
         &mut self.v.y
     }
 
-    pub(crate) fn b(&self) -> f32 {
+    pub fn b(&self) -> f32 {
         self.v.z
     }
 
-    pub(crate) fn mut_b(&mut self) -> &mut f32 {
+    pub fn mut_b(&mut self) -> &mut f32 {
         &mut self.v.z
     }
 }
@@ -61,11 +61,11 @@ impl<T: ColorSpace> From<Color<T>> for Vec3 {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Linear;
+pub struct Linear;
 impl ColorSpace for Linear {}
 
 impl Color<Linear> {
-    pub(crate) fn to_srgb(self) -> Color<Srgb> {
+    pub fn to_srgb(self) -> Color<Srgb> {
         Color::from(self)
     }
 }
@@ -81,11 +81,11 @@ impl From<Color<Srgb>> for Color<Linear> {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Srgb;
+pub struct Srgb;
 impl ColorSpace for Srgb {}
 
 impl Srgb {
-    pub(crate) fn gamma_function(value: f32) -> f32 {
+    pub fn gamma_function(value: f32) -> f32 {
         if value <= 0.0 {
             return value;
         }
@@ -110,7 +110,7 @@ impl Srgb {
 }
 
 impl Color<Srgb> {
-    pub(crate) fn to_linear(self) -> Color<Linear> {
+    pub fn to_linear(self) -> Color<Linear> {
         Color::from(self)
     }
 }
